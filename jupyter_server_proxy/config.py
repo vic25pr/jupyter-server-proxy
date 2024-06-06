@@ -41,6 +41,7 @@ ServerProcess = namedtuple(
         "new_browser_tab",
         "request_headers_override",
         "rewrite_response",
+        "proxy_client_options"
     ],
 )
 
@@ -80,6 +81,7 @@ def _make_supervisedproxy_handler(sp: ServerProcess):
             self.requested_unix_socket = sp.unix_socket
             self.mappath = sp.mappath
             self.rewrite_response = sp.rewrite_response
+            self.proxy_client_options = sp.proxy_client_options
 
         def get_env(self):
             return self._realize_rendered_template(sp.environment)
@@ -89,6 +91,9 @@ def _make_supervisedproxy_handler(sp: ServerProcess):
 
         def get_timeout(self):
             return sp.timeout
+
+        def get_proxy_client_options(self):
+            return self.proxy_client_options
 
     return _Proxy
 
@@ -157,6 +162,7 @@ def make_server_process(name, server_process_config, serverproxy_config):
             "rewrite_response",
             tuple(),
         ),
+        proxy_client_options=server_process_config.get('proxy_client_options', {})
     )
 
 
@@ -273,6 +279,9 @@ class ServerProxy(Configurable):
             instead of "dogs not allowed".
 
             Defaults to the empty tuple ``tuple()``.
+            
+          proxy_client_options
+            A dictionary of additional options passed to the proxy client.
         """,
         config=True,
     )
