@@ -24,6 +24,10 @@ from .unixsock import UnixResolver
 from .utils import call_with_asked_args
 from .websocket import WebSocketHandlerMixin, pingable_ws_connect
 
+MAX_BODY_SIZE = 5368709120
+
+httpclient.AsyncHTTPClient.configure("tornado.simple_httpclient.SimpleAsyncHTTPClient",
+                          max_body_size=MAX_BODY_SIZE)
 
 class RewritableResponse(HasTraits):
     """
